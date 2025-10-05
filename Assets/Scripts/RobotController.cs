@@ -22,7 +22,10 @@ public class RobotController : MonoBehaviour
     private bool isBlocked = false;
 
     private List<string> currentCommands = new List<string>();
-    
+
+    // Coroutin execution state
+    private Coroutine currentMoveCoroutine; // Declara una variable de tipo Coroutine
+
     // Events for UI feedback
     public System.Action OnCommandExecutionStarted;
     public System.Action OnCommandExecutionFinished;
@@ -107,7 +110,12 @@ public class RobotController : MonoBehaviour
         if (command.StartsWith("MOVE_FORWARD"))
         {
             float distance = ParseFloatParameter(command, "MOVE_FORWARD");
-            yield return StartCoroutine(MoveForward(distance));
+            if (currentMoveCoroutine != null)
+            {
+              StopCoroutine(currentMoveCoroutine); // Detén la anterior si está activa
+            }
+            yield return currentMoveCoroutine = StartCoroutine(MoveForward(distance));
+            //yield return StartCoroutine(MoveForward(distance));
         }
         else if (command.StartsWith("ROTATE"))
         {
@@ -283,11 +291,17 @@ public class RobotController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            Debug.Log("Robot collided with obstacle!");
+          if (currentMoveCoroutine != null)
+          {
+            // 1. **DETIENE LA CORRUTINA:** Esto interrumpe inmediatamente el bucle 'while'
+            StopCoroutine(currentMoveCoroutine);
+            //Debug.Log("Robot collided with obstacle!");
             isBlocked = true;
             
             if (robotRigidbody != null)
             {
+                Debug.Log("Robot Stop");
+                robotRigidbody.linearVelocity = Vector3.zero;
                 robotRigidbody.linearVelocity = Vector3.zero;
             }
             
@@ -296,6 +310,13 @@ public class RobotController : MonoBehaviour
             {
                 obstacle.OnRobotCollision();
             }
+            Debug.Log("Robot Stop: Corrutina de movimiento detenida por colisión.");
+            currentMoveCoroutine = null; // Limpia la referencia
+
+            isExecutingCommands = false;
+            OnCommandExecutionFinished?.Invoke();
+            Debug.Log("Command execution completed!");
+          }
         }
     }
 

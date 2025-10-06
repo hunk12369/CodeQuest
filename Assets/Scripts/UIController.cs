@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using SFB;
+using System.IO;
+
+
 
 /// <summary>
 /// Handles all UI interactions for the robot programming game
@@ -11,6 +15,7 @@ public class UIController : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TMP_InputField commandInputField;
     [SerializeField] private Button runButton;
+    [SerializeField] private Button importArduinoButton;
     [SerializeField] private Button resetButton;
     [SerializeField] private Button helpButton;
     [SerializeField] private TMP_Text feedbackText;
@@ -68,6 +73,10 @@ public class UIController : MonoBehaviour
         
         if (resetButton != null)
             resetButton.onClick.AddListener(OnResetButtonClicked);
+
+        if (importArduinoButton != null)
+            importArduinoButton.onClick.AddListener(OnImportArduinoButtonClicked);
+        
         
         if (helpButton != null)
             helpButton.onClick.AddListener(OnHelpButtonClicked);
@@ -94,7 +103,42 @@ public class UIController : MonoBehaviour
 
         robotController.ExecuteCommands(commands);
     }
-
+    private void OnImportArduinoButtonClicked()				
+    {
+	    string[] paths = StandaloneFileBrowser.OpenFilePanel("Selecciona el Sketch de Arduino (.ino)", "", "ino", false);
+	    if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+	    {
+		    string filePath = paths[0];
+		    ReadInoFile(filePath);
+	    }
+	    else
+	    {
+		    Debug.Log("Importacion cancelada.");
+	    }
+    }
+    private void ReadInoFile(string path)
+    {
+	    try
+	    {
+		    string fileContent = File.ReadAllText(path);
+		    if (true)
+		    //if (codeDisplay != null)
+		    {
+			    commandInputField.text = fileContent;
+			    ShowFeedback("Archivo cargado:\n" + Path.GetFileName(path), successColor);
+		    //codeDisplay.text = "Archivo cargado:\n" + Path.GetFileName(path) + "\n\n" + fileContent;
+		    }
+		    Debug.Log("Archivo .ino cargado con exito. Longitud: " + fileContent.Length);
+	    }
+	    catch (FileNotFoundException)
+	    {
+		    Debug.LogError("Error: Archivo no encontrado en la ruta: " + path);
+	    }
+	    catch (System.Exception e)
+	    {
+		    Debug.LogError("Error al leer el archivo: " + e.Message);
+	    }
+    }
     private void OnResetButtonClicked()
     {
         robotController?.ResetPosition();
@@ -138,6 +182,7 @@ public class UIController : MonoBehaviour
     {
         if (runButton != null) runButton.interactable = enabled;
         if (resetButton != null) resetButton.interactable = enabled;
+        if (importArduinoButton != null) resetButton.interactable = enabled;
     }
 
     private void OnDestroy()

@@ -1,10 +1,12 @@
+#include <RobotCommands.h>
+RobotCommands robot;
+
 void setup() {
-  pinMode(13, OUTPUT); // Configura el pin 13 como salida
+
 }
 
 void loop() {
-  digitalWrite(13, HIGH); // Enciende el LED
-  delay(1000);            // Espera 1 segundo
-  digitalWrite(13, LOW);  // Apaga el LED
-  delay(1000);            // Espera 1 segundo
+  robot.MOVEFORWARD(100); // Esto se validará
+  robot.ROTATE(90);       // Esto también se validará
+  // robot.GIRAR(10);     // Si este comando no existe, la validación (compilación) fallará.
 }

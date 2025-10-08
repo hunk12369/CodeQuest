@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using SFB;
 using System.IO;
@@ -14,6 +15,7 @@ public class UIController : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private TMP_InputField commandInputField;
+    [SerializeField] private Button returnButton;
     [SerializeField] private Button runButton;
     [SerializeField] private Button importArduinoButton;
     [SerializeField] private Button resetButton;
@@ -30,6 +32,8 @@ public class UIController : MonoBehaviour
     [SerializeField] private Color successColor = Color.green;
     [SerializeField] private Color errorColor = Color.red;
     [SerializeField] private Color normalColor = Color.white;
+
+    public string gameSceneName = "MainMenu"; 
 
     private void Start()
     {
@@ -71,6 +75,9 @@ public class UIController : MonoBehaviour
         if (runButton != null)
             runButton.onClick.AddListener(OnRunButtonClicked);
         
+        if (returnButton != null)
+            returnButton.onClick.AddListener(OnReturnButtonClicked);
+
         if (resetButton != null)
             resetButton.onClick.AddListener(OnResetButtonClicked);
 
@@ -80,6 +87,12 @@ public class UIController : MonoBehaviour
         
         if (helpButton != null)
             helpButton.onClick.AddListener(OnHelpButtonClicked);
+    }
+
+    private void OnReturnButtonClicked()
+    {
+        Debug.Log("Iniciando Juego...");
+        SceneManager.LoadScene(gameSceneName);
     }
 
     private void OnRunButtonClicked()
@@ -181,6 +194,7 @@ public class UIController : MonoBehaviour
     private void SetButtonsEnabled(bool enabled)
     {
         if (runButton != null) runButton.interactable = enabled;
+        if (returnButton != null) returnButton.interactable = enabled;
         if (resetButton != null) resetButton.interactable = enabled;
         if (importArduinoButton != null) resetButton.interactable = enabled;
     }

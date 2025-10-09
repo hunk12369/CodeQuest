@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Diagnostics;
 using TMPro;
 using SFB;
 using System.IO;
@@ -18,6 +19,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private Button returnButton;
     [SerializeField] private Button runButton;
     [SerializeField] private Button importArduinoButton;
+    [SerializeField] private Button compileButton;
     [SerializeField] private Button resetButton;
     [SerializeField] private Button helpButton;
     [SerializeField] private TMP_Text feedbackText;
@@ -34,6 +36,10 @@ public class UIController : MonoBehaviour
     [SerializeField] private Color normalColor = Color.white;
 
     public string gameSceneName = "MainMenu"; 
+    private const string executableName = "arduino-cli.exe";
+    //public string argumentos = "compile --fqbn arduino:avr:uno -v Example1";
+    public string argumentos1 = "sketch new Example1";
+    private string BaseDirectory => Application.streamingAssetsPath;
 
     private void Start()
     {
@@ -84,6 +90,8 @@ public class UIController : MonoBehaviour
         if (importArduinoButton != null)
             importArduinoButton.onClick.AddListener(OnImportArduinoButtonClicked);
         
+        if (compileButton != null)
+            compileButton.onClick.AddListener(OnCompileButtonClicked);
         
         if (helpButton != null)
             helpButton.onClick.AddListener(OnHelpButtonClicked);
@@ -91,7 +99,7 @@ public class UIController : MonoBehaviour
 
     private void OnReturnButtonClicked()
     {
-        Debug.Log("Iniciando Juego...");
+        UnityEngine.Debug.Log("Iniciando Juego...");
         SceneManager.LoadScene(gameSceneName);
     }
 
@@ -116,6 +124,7 @@ public class UIController : MonoBehaviour
 
         robotController.ExecuteCommands(commands);
     }
+
     private void OnImportArduinoButtonClicked()				
     {
 	    string[] paths = StandaloneFileBrowser.OpenFilePanel("Selecciona el Sketch de Arduino (.ino)", "", "ino", false);
@@ -126,9 +135,77 @@ public class UIController : MonoBehaviour
 	    }
 	    else
 	    {
-		    Debug.Log("Importacion cancelada.");
+		    UnityEngine.Debug.Log("Importacion cancelada.");
 	    }
     }
+
+    private void OnCompileButtonClicked()				
+    {
+      string inputText = commandInputField?.text ?? "";
+      string sketchFolder = Path.Combine(@"C:\Users\usuario\My project (1)", "Example1");
+      string filePath = Path.Combine(sketchFolder,"Example1" + ".ino");
+      try
+        {
+            // 4. Escribir todo el texto en el archivo
+            File.WriteAllText(filePath, inputText);
+            
+            UnityEngine.Debug.Log($"Sketch guardado exitosamente en: {filePath}");
+        }
+        catch (System.Exception ex)
+        {
+            UnityEngine.Debug.LogError($"Error al guardar el archivo: {ex.Message}");
+        }
+
+      ProcessStartInfo startInfo = new ProcessStartInfo();
+        
+      // 1. Define el archivo a ejecutar y los argumentos
+      string cliPath = Application.streamingAssetsPath + "/" + executableName;
+      if (!System.IO.File.Exists(cliPath))
+        {
+            UnityEngine.Debug.LogError("CLI no encontrado. Asegúrate de que 'arduino-cli.exe' esté en la carpeta StreamingAssets. Ruta esperada: " + cliPath);
+            return;
+        }
+      //UnityEngine.Debug.Log(cliPath);
+      startInfo.FileName = cliPath;
+      startInfo.Arguments = "compile --fqbn arduino:avr:uno -v Example1";
+
+      // 2. Configura el comportamiento (opcional pero recomendado)
+      startInfo.UseShellExecute = false; // Permite redirigir la entrada/salida
+      startInfo.RedirectStandardOutput = true; // Si quieres leer la salida del programa
+      startInfo.RedirectStandardError = true;
+      startInfo.CreateNoWindow = true; // No crea una ventana de consola visible
+
+      try
+      {
+        // 3. Inicia el proceso
+        Process process = Process.Start(startInfo);
+
+        // 4. (Opcional) Leer la salida si RedirectStandardOutput es true
+        string output = process.StandardOutput.ReadToEnd();
+        string error = process.StandardError.ReadToEnd();
+        process.WaitForExit(12000);
+
+        //UnityEngine.Debug.Log("Salida del programa de consola: " + output);
+        if (process.ExitCode != 0)
+        {
+          // El proceso terminó con un error
+                UnityEngine.Debug.LogError($"--- FALLO DE COMPILACIÓN ---\nSalida de Error: {error}\nSalida Estándar: {output}");
+        }
+        else
+        {
+          // El proceso terminó exitosamente
+          UnityEngine.Debug.Log($"--- COMPILACIÓN EXITOSA ---\nSalida: {output}");
+        }
+        // 5. Esperar a que el proceso termine (usar con cuidado para no colgar Unity)
+
+        process.Close();
+      }
+      catch (System.Exception ex)
+      {
+        UnityEngine.Debug.LogError("Error al ejecutar el programa: " + ex.Message);
+      }
+    }
+
     private void ReadInoFile(string path)
     {
 	    try
@@ -141,15 +218,15 @@ public class UIController : MonoBehaviour
 			    ShowFeedback("Archivo cargado:\n" + Path.GetFileName(path), successColor);
 		    //codeDisplay.text = "Archivo cargado:\n" + Path.GetFileName(path) + "\n\n" + fileContent;
 		    }
-		    Debug.Log("Archivo .ino cargado con exito. Longitud: " + fileContent.Length);
+		    UnityEngine.Debug.Log("Archivo .ino cargado con exito. Longitud: " + fileContent.Length);
 	    }
 	    catch (FileNotFoundException)
 	    {
-		    Debug.LogError("Error: Archivo no encontrado en la ruta: " + path);
+		    UnityEngine.Debug.LogError("Error: Archivo no encontrado en la ruta: " + path);
 	    }
 	    catch (System.Exception e)
 	    {
-		    Debug.LogError("Error al leer el archivo: " + e.Message);
+		    UnityEngine.Debug.LogError("Error al leer el archivo: " + e.Message);
 	    }
     }
     private void OnResetButtonClicked()
@@ -188,7 +265,7 @@ public class UIController : MonoBehaviour
             feedbackText.text = message;
             feedbackText.color = color;
         }
-        Debug.Log($"UI Feedback: {message}");
+        UnityEngine.Debug.Log($"UI Feedback: {message}");
     }
 
     private void SetButtonsEnabled(bool enabled)
@@ -197,6 +274,7 @@ public class UIController : MonoBehaviour
         if (returnButton != null) returnButton.interactable = enabled;
         if (resetButton != null) resetButton.interactable = enabled;
         if (importArduinoButton != null) resetButton.interactable = enabled;
+        if (compileButton != null) compileButton.interactable = enabled;
     }
 
     private void OnDestroy()

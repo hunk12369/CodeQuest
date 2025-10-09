@@ -7,8 +7,9 @@ using UnityEngine;
 /// </summary>
 public static class CommandParser
 {
-    private static readonly Regex moveForwardRegex = new Regex(@"^MOVE_FORWARD\((\d+(?:\.\d+)?)\)$", RegexOptions.IgnoreCase);
-    private static readonly Regex rotateRegex = new Regex(@"^ROTATE\((-?\d+(?:\.\d+)?)\)$", RegexOptions.IgnoreCase);
+    private static readonly Regex moveForwardRegex = new Regex(@"^robot.MOVEFORWARD\((\d+(?:\.\d+)?)\);$", RegexOptions.IgnoreCase);
+    //private static readonly Regex moveForwardRegex = new Regex(@"^robot.MOVE_FORWARD\((\d+(?:\.\d+)?)\)$", RegexOptions.IgnoreCase);
+    private static readonly Regex rotateRegex = new Regex(@"^robot.ROTATE\((-?\d+(?:\.\d+)?)\);$", RegexOptions.IgnoreCase);
 
     public static List<string> ParseCommands(string inputText)
     {
@@ -42,6 +43,7 @@ public static class CommandParser
         {
             Match match = moveForwardRegex.Match(command);
             float distance = float.Parse(match.Groups[1].Value);
+            Debug.Log($"distance: {distance}");
             return distance > 0 && distance <= 20;
         }
 

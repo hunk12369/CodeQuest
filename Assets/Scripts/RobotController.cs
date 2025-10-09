@@ -107,9 +107,12 @@ public class RobotController : MonoBehaviour
     private IEnumerator ExecuteSingleCommand(string command)
     {
         // Parse the command and extract parameters
-        if (command.StartsWith("MOVE_FORWARD"))
+      //Debug.Log(command);
+      //Debug.Log(command.StartsWith("robot.MOVEFORWARD"));
+        if (command.StartsWith("ROBOT.MOVEFORWARD"))
         {
-            float distance = ParseFloatParameter(command, "MOVE_FORWARD");
+            float distance = ParseFloatParameter(command, "robot.MOVEFORWARD");
+            Debug.Log(distance);
             if (currentMoveCoroutine != null)
             {
               StopCoroutine(currentMoveCoroutine); // Detén la anterior si está activa
@@ -117,9 +120,9 @@ public class RobotController : MonoBehaviour
             yield return currentMoveCoroutine = StartCoroutine(MoveForward(distance));
             //yield return StartCoroutine(MoveForward(distance));
         }
-        else if (command.StartsWith("ROTATE"))
+        else if (command.StartsWith("ROBOT.ROTATE"))
         {
-            float degrees = ParseFloatParameter(command, "ROTATE");
+            float degrees = ParseFloatParameter(command, "robot.ROTATE");
             yield return StartCoroutine(Rotate(degrees));
         }
         else

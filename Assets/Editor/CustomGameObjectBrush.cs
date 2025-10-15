@@ -42,6 +42,7 @@ public class CustomGameObjectBrush : GridBrushBase
         
         // A. Posici髇 con Offset: Posici髇 de celda + Offset
         go.transform.position = worldPosition + m_Offset;
+	Debug.Log(worldPosition + m_Offset);
         go.transform.parent = brushTarget.transform; 
 
         // B. Escala
@@ -69,18 +70,40 @@ public class CustomGameObjectBrush : GridBrushBase
     {
         // Obtener la posici贸n mundial de la celda
         Vector3 worldPosition = grid.CellToWorld(position);
-        
+	//Vector3 offset = new Vector3(-0.5f, 0f, 0.5f);
+	worldPosition = worldPosition + m_Offset;
+	float searchRadius = grid.cellSize.magnitude * 0.5f;
+
         // Buscar objetos cercanos a esa posici贸n para borrarlos
-        Collider2D[] colliders = Physics2D.OverlapPointAll(worldPosition);
+        //Collider2D[] colliders = Physics2D.OverlapPointAll(worldPosition);
+	//
+	// 4. Buscar objetos 3D cercanos a esa posici贸n
+	// Usamos Physics.OverlapSphere para buscar en 3D.
+	Collider[] colliders = Physics.OverlapSphere(worldPosition, searchRadius);
+	//Debug.Log($"Buscando en: {worldPosition} con radio: {searchRadius}. Encontrados: {colliders.Length}");
         
-        foreach (Collider2D collider in colliders)
+	for (int i = brushTarget.transform.childCount - 1; i >= 0; i--)
+	{
+		Transform child = brushTarget.transform.GetChild(i);
+        
+		// 5. Comparar la posici髇 del hijo con la posici髇 objetivo
+		if (Vector3.Distance(child.position, worldPosition) < grid.cellSize.magnitude * 0.5f)
+		{
+			//Debug.Log($"Borrando objeto en: {child.position}");
+			Undo.DestroyObjectImmediate(child.gameObject);
+		}
+	}
+	/*
+        foreach (Collider collider in colliders)
         {
+		Debug.Log(collider);
             if (collider.gameObject.transform.parent == brushTarget.transform)
             {
                 // Borrar el objeto y registrar la acci贸n para deshacer
                 Undo.DestroyObjectImmediate(collider.gameObject);
             }
         }
+	*/
     }
 
     // El resto de los m茅todos (BoxFill, FloodFill, etc.) se heredan de GridBrushBase

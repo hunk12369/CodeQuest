@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d691de72919c694fa1673ec226ad36f, type: 3}
+  m_Name: GrounSanddGameObjectBrush
+  m_EditorClassIdentifier: 
+  m_Prefab: {fileID: 919132149155446097, guid: d25bad196848d6741ab8631cdbc98222, type: 3}
+  m_RandomRotation: 0
+  m_Offset: {x: 1, y: 0.1, z: 1}
+  m_Scale: {x: 210, y: 210, z: 210}
+  m_Orientation: {x: 272, y: 0, z: 0}

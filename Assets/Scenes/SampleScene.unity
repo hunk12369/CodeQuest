@@ -5499,11 +5499,11 @@ MonoBehaviour:
     rotationOffset: {x: 272, y: 0, z: 0}
     scale: {x: 310, y: 210, z: 210}
   obstacle:
-    nombre: 
-    prefab: {fileID: 919132149155446097, guid: 1d5b34c4bf1c95f46bd4afe912769430, type: 3}
-    positionOffset: {x: 0, y: 0, z: 0}
+    nombre: Roca
+    prefab: {fileID: 540242983}
+    positionOffset: {x: 0.5, y: 0.5, z: 0.5}
     rotationOffset: {x: 0, y: 0, z: 0}
-    scale: {x: 0, y: 0, z: 0}
+    scale: {x: 0.8, y: 0.8, z: 0.8}
   width: 10
   height: 10
   obstaclePercent: 15
@@ -5516,7 +5516,7 @@ Transform:
   m_GameObject: {fileID: 594831728}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.7816677, y: 1.435132, z: 2.0137784}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6129,7 +6129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &746020383
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6255,7 +6255,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &750622762
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -8271,7 +8271,7 @@ Tilemap:
   m_Origin: {x: 0, y: 0, z: 0}
   m_Size: {x: 0, y: 0, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
-  m_TileOrientation: 1
+  m_TileOrientation: 0
   m_TileOrientationMatrix:
     e00: 1
     e01: 0
@@ -13389,7 +13389,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2132036777
 Transform:
@@ -13401,7 +13401,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 594831730}
@@ -13456,7 +13456,7 @@ Transform:
   m_GameObject: {fileID: 2133541525}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 1, z: 5}
+  m_LocalPosition: {x: 5, y: 4, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

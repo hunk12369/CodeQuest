@@ -8,14 +8,17 @@ public class ProceduralPrefabGenerator : MonoBehaviour
 
     [System.Serializable]
     public struct PrefabConfig {
-        public GameObject prefab;
-        public Vector3 rotationOffset; // Aquí pondrás el 272, 90, 0 o lo que necesites
+	public string nombre; // Solo para organizar en el Inspector
+	public GameObject prefab;
+	public Vector3 positionOffset; // <-- NUEVO: Ajuste fino de posición
+	public Vector3 rotationOffset; // Aquí pondrás el 272, 90, 0 o lo que necesites
+	public Vector3 scale;          // Aquí pones la escala que desees (ej. 1, 1, 1)
     }
 
-    [Header("Prefabs de Construcción")]
-    public GameObject floorPrefab;
-    public GameObject wallPrefab;
-    public GameObject obstaclePrefab;
+    [Header("Configuración de Prefabs")]
+    public PrefabConfig floor;
+    public PrefabConfig wall;
+    public PrefabConfig obstacle;
 
     [Header("Dimensiones")]
     public int width = 10;
@@ -34,8 +37,17 @@ public class ProceduralPrefabGenerator : MonoBehaviour
     public void Generate()
     {
         // Limpiar nivel anterior
+	// Limpieza de objetos anteriores
+        if (container == null) return;
+	/*
         foreach (Transform child in container) {
             Destroy(child.gameObject);
+        }
+	*/
+
+	for (int i = container.childCount - 1; i >= 0; i--) {
+            if (Application.isPlaying) Destroy(container.GetChild(i).gameObject);
+            else DestroyImmediate(container.GetChild(i).gameObject);
         }
 
         for (int x = 0; x < width; x++)
@@ -47,14 +59,16 @@ public class ProceduralPrefabGenerator : MonoBehaviour
 		//Vector3 worldPos = grid.CellToWorld(cellPos) + new Vector3(0.5f, 0, 0.5f);
 		Debug.Log("Position");
 		Debug.Log(worldPos);
-
+		// Lógica de decisión
+                PrefabConfig currentConfig = floor;
                 // 1. Colocar Suelo siempre
-                SpawnPrefab(floorPrefab, worldPos);
+                SpawnPrefab(currentConfig, worldPos);
 
                 // 2. Colocar Paredes en los bordes
                 if (x == 0 || x == width - 1 || z == 0 || z == height - 1)
                 {
-                    SpawnPrefab(wallPrefab, worldPos);
+			currentConfig = wall;
+			SpawnPrefab(currentConfig, worldPos);
                 }
                 // 3. Colocar Obstáculos aleatorios
                 else if (Random.Range(0, 100) < obstaclePercent)
@@ -62,17 +76,27 @@ public class ProceduralPrefabGenerator : MonoBehaviour
                     // Evitar el punto de inicio del robot (1,0,1)
                     if (!(x == 1 && z == 1))
                     {
-                        SpawnPrefab(obstaclePrefab, worldPos);
+			currentConfig = obstacle;
+			SpawnPrefab(currentConfig, worldPos);
                     }
                 }
             }
         }
     }
 
-    void SpawnPrefab(GameObject prefab, Vector3 position)
+    void SpawnPrefab(PrefabConfig config, Vector3 basePosition)
     {
-        if (prefab == null) return;
-        GameObject go = Instantiate(prefab, position, Quaternion.identity);
+        if (config.prefab == null) return;
+	// 1. Aplicamos el Position Offset sumándolo a la posición base de la celda
+        // OJO: Como tu grid está rotada, quizás debas probar si el offset es local o global
+        Vector3 finalPos = basePosition + config.positionOffset;
+
+	// Aplicamos la rotación específica que definas en el Inspector
+        Quaternion rotation = Quaternion.Euler(config.rotationOffset);
+        GameObject go = Instantiate(config.prefab, finalPos, rotation);
+	// 2. Aplicar la escala guardada
+        go.transform.localScale = config.scale;
+
         go.transform.parent = container;
     }
 }
